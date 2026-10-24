@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Trädgård</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2f5a3d">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Trädgård">
+<style>
+:root{--bg:#e8eee2;--surf:#f8faf4;--ink:#1c2a20;--mute:#5d6e60;--moss:#2f5a3d;--onmoss:#fff;--soil:#cdbfa6;--soil2:#bfae91;--good:#3f9a58;--bad:#b8432d;--gold:#e0a526;--line:#cfd8c6;color-scheme:light dark}
+@media(prefers-color-scheme:dark){:root{--bg:#141c16;--surf:#1d2820;--ink:#e6efe2;--mute:#9bb09f;--moss:#7fc08f;--onmoss:#10190f;--soil:#3b3328;--soil2:#4a3f31;--good:#58b573;--bad:#e0705a;--line:#2c3a2f}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) calc(env(safe-area-inset-bottom) + 24px) env(safe-area-inset-left)}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px 6px;max-width:640px;margin:0 auto}
+h1,h2,h3{font-family:"Iowan Old Style",Palatino,Georgia,serif;margin:0;font-weight:700;letter-spacing:.01em}
+h1{font-size:1.7rem;color:var(--moss)}h2{font-size:1.35rem;margin:14px 0 10px}h3{font-size:1.05rem;margin:18px 0 8px}
+nav{display:flex;gap:4px}
+nav a{padding:7px 12px;border-radius:999px;color:var(--mute);text-decoration:none;font-weight:600;font-size:.9rem}
+nav a.on{background:var(--moss);color:var(--onmoss)}
+main{max-width:640px;margin:0 auto;padding:0 16px}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.card{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.card span,.mute{color:var(--mute);font-size:.88rem}
+.btn{background:var(--moss);color:var(--onmoss);border:0;border-radius:10px;padding:10px 16px;font-weight:700}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.danger{background:transparent;color:var(--bad);border:1px solid var(--bad)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+details.new{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:12px 0}
+summary{font-weight:700;cursor:pointer}
+label{display:block;font-size:.85rem;color:var(--mute);margin:10px 0 4px}
+input,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px}
+.empty{color:var(--mute);padding:8px 2px}
+.bed{display:grid;gap:5px;padding:8px;background:var(--soil);border-radius:14px;margin:10px 0}
+.cell{aspect-ratio:1;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--soil2);border:0;border-radius:8px;padding:2px;overflow:hidden}
+.cell i{font-style:normal;font-size:var(--f,28px);line-height:1}
+.cell i.plus{opacity:.35;font-size:1.3rem}
+.cell small{font-size:.62rem;line-height:1.1;margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cell.s1{box-shadow:inset 0 0 0 3px var(--good)}
+.cell.s-1{box-shadow:inset 0 0 0 3px var(--bad)}
+.cell b{position:absolute;top:2px;right:4px;font-size:.7rem}
+.cell.s1 b{color:var(--good)}.cell.s-1 b{color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--surf);border:1px solid var(--line);border-radius:999px;padding:5px 11px;font-size:.88rem}
+.chip.g{border-color:var(--good)}.chip.b{border-color:var(--bad)}
+#sheet.open{position:fixed;inset:0;z-index:5;display:flex;align-items:flex-end;justify-content:center}
+#sheet .back{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.panel{position:relative;background:var(--surf);width:100%;max-width:640px;max-height:82vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(env(safe-area-inset-bottom) + 18px);animation:up .18s ease-out}
+@keyframes up{from{transform:translateY(24px);opacity:0}}
+@media(prefers-reduced-motion:reduce){.panel{animation:none}}
+.pl{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--line);padding:10px 2px}
+.pl i{font-style:normal;font-size:1.5rem}.pl span{flex:1}
+.ok{color:var(--good);font-weight:700}.no{color:var(--bad);font-weight:700}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:10px;font-size:.9rem;display:none;z-index:9}
+</style>
+</head>
+<body>
+<header><h1>Trädgård</h1><nav id="nav"></nav></header>
+<main id="app"></main>
+<div id="sheet"></div>
+<div id="toast" role="status"></div>
+<script>
+const K='tradgard.v1';
+const RAW=`tomat|🍅|Tomat|basilika morot persilja ringblomma lok vitlok sallat tagetes paprika|potatis fankal kal majs dill
+gurka|🥒|Gurka|dill bonor sallat lok majs tagetes solros radisa|potatis
+morot|🥕|Morot|lok purjolok tomat arter radisa sallat persilja|dill fankal
+lok|🧅|Lök|morot tomat sallat jordgubbar rodbeta kal|arter bonor
+vitlok|🧄|Vitlök|tomat morot jordgubbar rodbeta kal|arter bonor
+potatis|🥔|Potatis|bonor kal majs ringblomma tagetes|tomat gurka pumpa solros
+sallat|🥬|Sallat|morot radisa jordgubbar gurka lok|persilja
+radisa|🔴|Rädisa|sallat morot gurka arter spenat|kal
+arter|🟢|Ärtor|morot radisa gurka majs kal spenat|lok vitlok purjolok fankal
+bonor|🫘|Bönor|potatis morot gurka majs kal pumpa|lok vitlok purjolok fankal rodbeta
+kal|🥦|Kål|dill lok vitlok potatis rodbeta ringblomma tagetes|tomat jordgubbar
+rodbeta|🟣|Rödbeta|lok vitlok kal sallat|bonor
+pumpa|🎃|Pumpa|majs bonor ringblomma|potatis
+majs|🌽|Majs|bonor pumpa gurka arter solros|tomat
+jordgubbar|🍓|Jordgubbar|lok vitlok sallat spenat ringblomma bonor|kal
+spenat|🍃|Spenat|jordgubbar arter radisa|
+purjolok|🌱|Purjolök|morot jordgubbar|arter bonor
+basilika|🍀|Basilika|tomat paprika|
+dill|🌾|Dill|gurka kal lok sallat|morot fankal tomat
+persilja|☘️|Persilja|tomat morot|sallat
+ringblomma|🌼|Ringblomma|tomat potatis pumpa jordgubbar bonor kal|
+tagetes|🏵️|Tagetes|tomat potatis gurka kal|
+fankal|🌿|Fänkål||tomat bonor arter morot dill paprika
+paprika|🫑|Paprika|basilika morot lok tagetes|fankal
+solros|🌻|Solros|gurka majs|potatis`;
+const P=RAW.split('\n').map(l=>{const[a,e,n,g,b]=l.split('|');return{id:a,e,n,g:new Set((g||'').split(' ').filter(Boolean)),b:new Set((b||'').split(' ').filter(Boolean))}});
+const PM=Object.fromEntries(P.map(p=>[p.id,p]));
+const rel=(a,b)=>{const x=PM[a],y=PM[b];if(!x||!y||a===b)return 0;if(x.b.has(b)||y.b.has(a))return -1;if(x.g.has(b)||y.g.has(a))return 1;return 0};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const chip=(p,c)=>`<span class="chip ${c||''}">${p.e} ${p.n}</span>`;
+
+let S=load(),SH=null,GOPEN=null;
+function load(){try{const j=JSON.parse(localStorage.getItem(K));if(j&&Array.isArray(j.beds))return j}catch(e){}return{beds:[]}}
+function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){toast('Kunde inte spara – lagringen är full eller blockerad')}}
+function toast(t){const x=$('#toast');x.textContent=t;x.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>x.style.display='none',2600)}
+const bedOf=id=>S.beds.find(b=>b.id===id);
+
+function nb(b,r,c){const o=[];for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++){if(!i&&!j)continue;const R=r+i,C=c+j;if(R<0||C<0||R>=b.h||C>=b.w)continue;const x=b.cells[R+','+C];if(x)o.push(x.p)}return o}
+function stat(b,r,c){const k=b.cells[r+','+c];if(!k)return 0;let s=0;for(const q of nb(b,r,c)){const v=rel(k.p,q);if(v<0)return -1;if(v>0)s=1}return s}
+
+/* ---------- views ---------- */
+function nav(){const h=location.hash;$('#nav').innerHTML=`<a href="#/" class="${h.startsWith('#/guide')?'':'on'}">Bäddar</a><a href="#/guide" class="${h.startsWith('#/guide')?'on':''}">Växtguide</a>`}
+function route(){nav();SH=null;sheet();const h=location.hash.slice(1)||'/';const a=$('#app');
+ if(h.startsWith('/bed/')){const b=bedOf(h.slice(5));a.innerHTML=b?vBed(b):'<p class="empty">Bädden finns inte. <a href="#/">Till dina bäddar</a></p>'}
+ else if(h==='/guide')a.innerHTML=vGuide();
+ else a.innerHTML=vList()}
+function vList(){
+ const list=S.beds.length?S.beds.map(b=>`<button class="card" data-a="open" data-id="${b.id}"><b>${esc(b.name)}</b><span>${b.w}×${b.h} rutor · ${Object.keys(b.cells).length} planterade</span></button>`).join(''):'<p class="empty">Inga bäddar än. Skapa en bädd som motsvarar en riktig yta i din trädgård och märk ut vad som växer var.</p>';
+ return `<h2>Dina bäddar</h2>${list}
+ <details class="new" ${S.beds.length?'':'open'}><summary>Ny bädd</summary>
+ <label for="bn">Namn</label><input id="bn" placeholder="t.ex. Odlingslådan vid garaget">
+ <div class="row"><div style="flex:1"><label for="bw">Rutor i bredd (1–10)</label><input id="bw" type="number" min="1" max="10" value="4" inputmode="numeric"></div>
+ <div style="flex:1"><label for="bh">Rutor i höjd (1–10)</label><input id="bh" type="number" min="1" max="10" value="3" inputmode="numeric"></div></div>
+ <p class="row"><button class="btn" data-a="addbed">Skapa bädd</button></p></details>
+ <h3>Säkerhetskopia</h3><p class="mute">Allt sparas i den här telefonens webbläsare. Spara en kopia ibland.</p>
+ <div class="row"><button class="btn alt" data-a="export">Exportera</button><label class="btn alt" style="margin:0;color:var(--ink)">Importera<input type="file" id="imp" accept="application/json" hidden></label></div>`}
+function vBed(b){
+ const f=Math.max(16,Math.min(34,Math.floor(300/b.w*.55)));let g='';
+ for(let r=0;r<b.h;r++)for(let c=0;c<b.w;c++){const k=b.cells[r+','+c],s=stat(b,r,c),p=k&&PM[k.p];
+  g+=p?`<button class="cell s${s}" data-a="cell" data-k="${r},${c}" aria-label="${p.n}${s>0?', trivs med grannar':s<0?', samsas dåligt med granne':''}"><i>${p.e}</i>${b.w<=6?`<small>${p.n}</small>`:''}${s?`<b aria-hidden="true">${s>0?'✓':'!'}</b>`:''}</button>`
+  :`<button class="cell" data-a="cell" data-k="${r},${c}" aria-label="Tom ruta, välj växt"><i class="plus">+</i></button>`}
+ const types=[...new Set(Object.values(b.cells).map(x=>x.p))];
+ let sug='';
+ if(types.length){
+  const rows=P.filter(q=>!types.includes(q.id)).map(q=>({q,g:types.filter(t=>rel(q.id,t)>0),b:types.filter(t=>rel(q.id,t)<0)}));
+  const good=rows.filter(x=>x.g.length&&!x.b.length).sort((a,z)=>z.g.length-a.g.length).slice(0,8);
+  const bad=rows.filter(x=>x.b.length).slice(0,8);
+  sug=`<h3>Passar till det du har</h3>${good.length?`<div class="chips">${good.map(x=>chip(x.q,'g').replace('</span>',` · ${x.g.length} av ${types.length}</span>`)).join('')}</div>`:'<p class="mute">Inga tydliga förslag just nu.</p>'}
+  ${bad.length?`<h3>Undvik i samma bädd</h3><div class="chips">${bad.map(x=>chip(x.q,'b').replace('</span>',` – dåligt med ${x.b.map(t=>PM[t].n).join(', ')}</span>`)).join('')}</div>`:''}`}
+ else sug='<p class="empty">Tryck på en ruta och välj vad du har planterat där. Sedan får du förslag på vad som växer bra ihop med det.</p>';
+ return `<p><a href="#/">← Dina bäddar</a></p><h2>${esc(b.name)}</h2><p class="mute">${b.w}×${b.h} rutor. ✓ = trivs med grannen, ! = samsas dåligt med grannen.</p>
+ <div class="bed" style="grid-template-columns:repeat(${b.w},1fr);--f:${f}px">${g}</div>${sug}
+ <div class="row" style="margin-top:22px"><button class="btn alt" data-a="rename" data-id="${b.id}">Byt namn</button><button class="btn danger" data-a="delbed" data-id="${b.id}">Ta bort bädd</button></div>`}
+function vGuide(){
+ return `<h2>Växtguide</h2><input id="gq" type="search" placeholder="Sök växt" aria-label="Sök växt" autocomplete="off"><div id="gl">${gList('')}</div>
+ <p class="mute" style="margin-top:18px">Kompisplantering bygger mest på tradition och odlarerfarenhet, inte på hårda studier. Se det som tips och testa själv.</p>`}
+function gList(q){q=q.trim().toLowerCase();return P.filter(p=>p.n.toLowerCase().includes(q)).sort((a,b)=>a.n.localeCompare(b.n,'sv')).map(p=>{
+ const open=GOPEN===p.id,f=P.filter(x=>rel(p.id,x.id)>0),o=P.filter(x=>rel(p.id,x.id)<0);
+ return `<button class="pl" data-a="gopen" data-id="${p.id}" aria-expanded="${open}"><i>${p.e}</i><span>${p.n}</span><span class="mute" style="flex:none">${open?'−':'+'}</span></button>`+
+ (open?`<div style="padding:8px 2px 14px"><div class="mute">Trivs med</div><div class="chips">${f.map(x=>chip(x,'g')).join('')||'<span class="mute">–</span>'}</div><div class="mute" style="margin-top:10px">Undvik</div><div class="chips">${o.map(x=>chip(x,'b')).join('')||'<span class="mute">–</span>'}</div></div>`:'')}).join('')||'<p class="empty">Ingen växt matchar.</p>'}
+
+/* ---------- sheet (välj / redigera ruta) ---------- */
+function sheet(){const el=$('#sheet');if(!SH){el.className='';el.innerHTML='';return}
+ const b=bedOf(SH.bed),[r,c]=SH.key.split(',').map(Number),cell=b.cells[SH.key];let h='<div class="back" data-a="close"></div><div class="panel">';
+ if(cell&&!SH.swap){const p=PM[cell.p],ns=nb(b,r,c);
+  h+=`<h2 style="margin-top:0">${p.e} ${p.n}</h2><p class="mute">Planterad ${new Date(cell.d).toLocaleDateString('sv-SE')}</p>
+  <label for="nt">Anteckning</label><textarea id="nt" rows="3" placeholder="Sort, sådatum, skörd …">${esc(cell.n||'')}</textarea>
+  <h3>Grannar</h3>${ns.length?ns.map(q=>{const v=rel(cell.p,q);return `<div class="pl" style="cursor:default"><i>${PM[q].e}</i><span>${PM[q].n}</span><span class="${v>0?'ok':v<0?'no':'mute'}">${v>0?'✓ trivs ihop':v<0?'! undvik':'neutral'}</span></div>`}).join(''):'<p class="mute">Inga planterade grannar.</p>'}
+  <div class="row" style="margin-top:16px"><button class="btn" data-a="close">Klar</button><button class="btn alt" data-a="swap">Byt växt</button><button class="btn danger" data-a="clear">Ta bort</button></div>`}
+ else h+=`<h2 style="margin-top:0">Vad växer här?</h2><input id="pq" type="search" placeholder="Sök växt" aria-label="Sök växt" autocomplete="off"><div id="plist">${pList(b,r,c,'')}</div>`;
+ el.className='open';el.innerHTML=h+'</div>'}
+function pList(b,r,c,q){q=q.trim().toLowerCase();const ns=nb(b,r,c);
+ return P.filter(p=>p.n.toLowerCase().includes(q)).map(p=>({p,g:ns.filter(n=>rel(p.id,n)>0).length,b:ns.filter(n=>rel(p.id,n)<0).length}))
+  .sort((a,z)=>a.b-z.b||z.g-a.g||a.p.n.localeCompare(z.p.n,'sv'))
+  .map(x=>`<button class="pl" data-a="pick" data-id="${x.p.id}"><i>${x.p.e}</i><span>${x.p.n}</span>${x.g?`<span class="ok">✓ ${x.g}</span>`:''}${x.b?`<span class="no">! ${x.b}</span>`:''}</button>`).join('')||'<p class="empty">Ingen växt matchar.</p>'}
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t)return;const a=t.dataset.a,id=t.dataset.id;
+ if(a==='open')location.hash='#/bed/'+id;
+ else if(a==='addbed'){const n=$('#bn').value.trim()||'Ny bädd',w=Math.max(1,Math.min(10,parseInt($('#bw').value)||4)),h=Math.max(1,Math.min(10,parseInt($('#bh').value)||3));
+  const b={id:'b'+Date.now().toString(36),name:n,w,h,cells:{}};S.beds.push(b);save();location.hash='#/bed/'+b.id}
+ else if(a==='cell'){SH={bed:location.hash.slice(6),key:t.dataset.k};sheet()}
+ else if(a==='close'){const had=SH;SH=null;sheet();if(had)route2()}
+ else if(a==='pick'){const b=bedOf(SH.bed),old=b.cells[SH.key];b.cells[SH.key]={p:id,d:old&&old.p===id?old.d:new Date().toISOString().slice(0,10),n:old&&old.p===id?old.n:''};save();SH=null;sheet();route2()}
+ else if(a==='swap'){SH.swap=true;sheet()}
+ else if(a==='clear'){delete bedOf(SH.bed).cells[SH.key];save();SH=null;sheet();route2()}
+ else if(a==='rename'){const b=bedOf(id),n=prompt('Nytt namn på bädden',b.name);if(n&&n.trim()){b.name=n.trim();save();route2()}}
+ else if(a==='delbed'){const b=bedOf(id);if(confirm(`Ta bort "${b.name}" och allt som är planterat i den?`)){S.beds=S.beds.filter(x=>x.id!==id);save();location.hash='#/'}}
+ else if(a==='gopen'){GOPEN=GOPEN===id?null:id;$('#gl').innerHTML=gList($('#gq').value)}
+ else if(a==='export'){const u=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'})),l=document.createElement('a');l.href=u;l.download='tradgard-kopia.json';l.click();setTimeout(()=>URL.revokeObjectURL(u),1500)}
+});
+function route2(){const h=location.hash.slice(1)||'/',a=$('#app');if(h.startsWith('/bed/')){const b=bedOf(h.slice(5));if(b)a.innerHTML=vBed(b)}}
+document.addEventListener('input',e=>{
+ if(e.target.id==='pq'){const b=bedOf(SH.bed),[r,c]=SH.key.split(',').map(Number);$('#plist').innerHTML=pList(b,r,c,e.target.value)}
+ else if(e.target.id==='gq')$('#gl').innerHTML=gList(e.target.value);
+ else if(e.target.id==='nt'){const c=bedOf(SH.bed).cells[SH.key];if(c){c.n=e.target.value;save()}}});
+document.addEventListener('change',e=>{if(e.target.id!=='imp'||!e.target.files[0])return;
+ e.target.files[0].text().then(t=>{const j=JSON.parse(t);if(!j||!Array.isArray(j.beds))throw 0;if(confirm('Ersätta dina nuvarande bäddar med kopian?')){S=j;save();route();toast('Kopian importerades')}}).catch(()=>toast('Filen gick inte att läsa som en Trädgård-kopia'))});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&SH){SH=null;sheet();route2()}});
+window.addEventListener('hashchange',route);
+route();
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
